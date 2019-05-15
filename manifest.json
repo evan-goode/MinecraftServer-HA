@@ -1,0 +1,8 @@
+{
+        "domain": "minecraft",
+        "name": "Minecraft Server sensor custom component",
+        "documentation": "https://github.com/olenoerby/MinecraftServer-HA",
+        "requirements": ["mcstatus==2.1"],
+        "dependencies": [],
+        "codeowners": ["@olenoerby"]
+}
