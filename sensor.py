@@ -8,6 +8,7 @@ ATTR_PING = 'Ping'
 ATTR_USERS = 'Users Online'
 ATTR_MOTD = 'MOTD'
 ATTR_VERSION = 'Version'
+ATTR_MAXUSERS = 'Max Players'
 ICON = 'mdi:minecraft'
 REQUIREMENTS = ['mcstatus==2.1']
 
@@ -58,7 +59,8 @@ class MCServerSensor(Entity):
         """Update device state."""
         status = self._mcserver.lookup(self._server).status()
         query = self._mcserver.lookup(self._server).query()
-        self._state = str(status.players.online) + '/' + str(status.players.max)
+        self._state = status.players.online
+        self._max = status.players.max
         self._ping = status.latency
         self._users = query.players.names
         self._motd = query.motd
@@ -71,6 +73,7 @@ class MCServerSensor(Entity):
         return {
        ATTR_PING: self._ping,
        ATTR_USERS: self._users,
+       ATTR_MAXPLAYERS: self._max,
        ATTR_MOTD: self._motd,
        ATTR_VERSION: self._version
         }
