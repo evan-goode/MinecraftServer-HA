@@ -5,23 +5,26 @@ Sensor to check the status of a Minecraft server.
 import logging
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
+from datetime import timedelta
 
 ATTR_PING = 'Ping'
 ATTR_USERS = 'Users Online'
 ATTR_MOTD = 'MOTD'
 ATTR_VERSION = 'Version'
 ATTR_ONLINE = 'Online Players'
-ATTR_MAXUSERS = 'Max Players'
+ATTR_MAXPLAYERS = 'Max Players'
 ICON = 'mdi:minecraft'
 REQUIREMENTS = ['mcstatus==2.1']
 
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
+logger = logging.getLogger(__name__)
 
 # pylint: disable=unused-argument
+
+
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Setup the Minecraft server platform."""
     from mcstatus import MinecraftServer as mcserver
-    logger = logging.getLogger(__name__)
 
     server = config.get('server')
     name = config.get('name')
@@ -60,7 +63,7 @@ class MCServerSensor(Entity):
         return self._state
 
     # pylint: disable=no-member
-    @Throttle(MIN_TIME_BETWEEN_UPDATES)    
+    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         """Update device state."""
 
@@ -80,17 +83,16 @@ class MCServerSensor(Entity):
             self._motd = query.motd
             self._version = query.software.version
 
-
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-       ATTR_PING: self._ping,
-       AATTR_ONLINE: self._online
-       ATTR_USERS: self._users,
-       ATTR_MAXPLAYERS: self._max,
-       ATTR_MOTD: self._motd,
-       ATTR_VERSION: self._version
+                ATTR_PING: self._ping,
+                ATTR_ONLINE: self._online,
+                ATTR_USERS: self._users,
+                ATTR_MAXPLAYERS: self._max,
+                ATTR_MOTD: self._motd,
+                ATTR_VERSION: self._version
         }
 
     @property
