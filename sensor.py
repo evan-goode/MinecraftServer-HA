@@ -4,6 +4,8 @@ Sensor to check the status of a Minecraft server.
 """
 import logging
 from homeassistant.helpers.entity import Entity
+from homeassistant.util import Throttle
+
 ATTR_PING = 'Ping'
 ATTR_USERS = 'Users Online'
 ATTR_MOTD = 'MOTD'
@@ -12,6 +14,8 @@ ATTR_ONLINE = 'Online Players'
 ATTR_MAXUSERS = 'Max Players'
 ICON = 'mdi:minecraft'
 REQUIREMENTS = ['mcstatus==2.1']
+
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
 
 # pylint: disable=unused-argument
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -56,6 +60,7 @@ class MCServerSensor(Entity):
         return self._state
 
     # pylint: disable=no-member
+    @Throttle(MIN_TIME_BETWEEN_UPDATES)    
     def update(self):
         """Update device state."""
 
