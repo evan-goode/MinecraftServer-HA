@@ -8,6 +8,7 @@ ATTR_PING = 'Ping'
 ATTR_USERS = 'Users Online'
 ATTR_MOTD = 'MOTD'
 ATTR_VERSION = 'Version'
+ATTR_ONLINE = 'Online Players'
 ATTR_MAXUSERS = 'Max Players'
 ICON = 'mdi:minecraft'
 REQUIREMENTS = ['mcstatus==2.1']
@@ -57,14 +58,22 @@ class MCServerSensor(Entity):
     # pylint: disable=no-member
     def update(self):
         """Update device state."""
-        status = self._mcserver.lookup(self._server).status()
-        query = self._mcserver.lookup(self._server).query()
-        self._state = status.players.online
-        self._max = status.players.max
-        self._ping = status.latency
-        self._users = query.players.names
-        self._motd = query.motd
-        self._version = query.software.version
+
+        try:
+            status = self._mcserver.lookup(self._server).status()
+        except Exception as err:
+            logger.error("Error connecting to server, assuming offline.")
+            logger.debug("Server response: %s", str(err))
+            status = self._state = "Offline"
+        else:
+            query = self._mcserver.lookup(self._server).query()
+            self._state = "Online"
+            self._online = status.players.online
+            self._max = status.players.max
+            self._ping = status.latency
+            self._users = query.players.names
+            self._motd = query.motd
+            self._version = query.software.version
 
 
     @property
@@ -72,6 +81,7 @@ class MCServerSensor(Entity):
         """Return the state attributes."""
         return {
        ATTR_PING: self._ping,
+       AATTR_ONLINE: self._online
        ATTR_USERS: self._users,
        ATTR_MAXPLAYERS: self._max,
        ATTR_MOTD: self._motd,
