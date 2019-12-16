@@ -75,7 +75,7 @@ class MCServerSensor(Entity):
             status = self._state = "Offline"
         else:
             query = self._mcserver.lookup(self._server).query()
-            self._state = f"{status.players.online}/{status.players.max}"
+            self._state = str(status.players.online)
             self._online = status.players.online
             self._max = status.players.max
             self._ping = status.latency
